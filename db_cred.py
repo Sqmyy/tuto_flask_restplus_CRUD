@@ -1,0 +1,1 @@
+DB_URI = 'postgres://toyhsflfcqdzjf:a97b1b7d9c02131ee93562a2621c3d45f94586bcc66149919937d67e5fb97b29@ec2-46-137-124-19.eu-west-1.compute.amazonaws.com:5432/dfsvjafiq852k2'
