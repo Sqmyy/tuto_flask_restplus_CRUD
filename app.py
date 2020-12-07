@@ -22,16 +22,6 @@ class TodoTask(object):
     })
 
 
-""" Exemple de requete pour creer/modifier une tache
-{
-    "task":{
-        "t_id": 1,
-        "t_title": "tache_test",
-        "t_description": "description_test",
-        "t_done": false
-    }
-}"""
-
 
 request = reqparse.RequestParser()
 request.add_argument('task', location='json')
@@ -53,7 +43,7 @@ class TaskByID(Resource):
             abort(404, message="Task {} not existing".format(id))
         session.delete(task)
         session.commit()
-        return jsonify({'resultat suppression de la tache d\'id ': True})
+        return jsonify({'resultat suppression de la tache d\'id ' + str(task_id): True})
 
     @myNamespace.marshal_with(TodoTask.task)
     @myNamespace.expect(request, validate=False)
