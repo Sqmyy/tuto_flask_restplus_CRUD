@@ -1,6 +1,6 @@
 .Exemple de requete pour creer/modifier une tache
 
-
+```shell
 {
     "task":{
         "t_id": 1,
@@ -9,3 +9,4 @@
         "t_done": false
     }
 }
+```
