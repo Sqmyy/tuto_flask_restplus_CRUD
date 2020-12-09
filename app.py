@@ -22,7 +22,6 @@ class TodoTask(object):
     })
 
 
-
 request = reqparse.RequestParser()
 request.add_argument('task', location='json')
 
@@ -86,4 +85,4 @@ class TodoTaskList(Resource):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
