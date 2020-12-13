@@ -5,14 +5,16 @@ from models import *
 from db import session
 from db_cred import DB_URI
 
+"""Config app/API"""
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = DB_URI
 
 api = Api(app)
 myNamespace = Namespace("tutoFlask-restplus", "todo list sample api")
 api.add_namespace(myNamespace)
+"""end of config"""
 
-
+"""Request example"""
 class TodoTask(object):
     task = myNamespace.model('task', {
         "t_id": fields.Integer(required=False),
@@ -26,17 +28,18 @@ request = reqparse.RequestParser()
 request.add_argument('task', location='json')
 
 
+"""Manages tasks individually"""
 @myNamespace.route("/tasks/<int:task_id>")
 class TaskByID(Resource):
     def get(self, task_id=None):
-        """Get the details of a task from its id"""
+        """Gets the details of a task from its id"""
         task = session.query(Task).filter(Task.t_id == task_id).first()
         if not task:
             abort(404, message="Task {} not existing".format(id))
         return task.display()
 
     def delete(self, task_id):
-        """Delete a task from its id"""
+        """Deletes a task from its id"""
         task = session.query(Task).filter(Task.t_id == task_id).first()
         if not task:
             abort(404, message="Task {} not existing".format(id))
@@ -47,7 +50,7 @@ class TaskByID(Resource):
     @myNamespace.marshal_with(TodoTask.task)
     @myNamespace.expect(request, validate=False)
     def put(self, task_id):
-        """Change values of a task from its id"""
+        """Changes values of a task from its id"""
         parsed_args = request.parse_args()
         task = session.query(Task).filter(Task.t_id == task_id).first()
         newDataTask = parsed_args['task']
@@ -60,11 +63,12 @@ class TaskByID(Resource):
         return task, 201
 
 
+"""Manages the complete list of tasks"""
 @myNamespace.route("/tasks")
 class TodoTaskList(Resource):
     @myNamespace.marshal_with(TodoTask.task)
     def get(self):
-        """Get every task in the list"""
+        """Gets every task in the list"""
         tasks = session.query(Task).all()
         print(type(tasks))
         return tasks
@@ -72,7 +76,7 @@ class TodoTaskList(Resource):
     @myNamespace.marshal_with(TodoTask.task)
     @myNamespace.expect(request, validate=False)
     def post(self):
-        """Add a task to the list"""
+        """Adds a task to the list"""
         parsed_args = request.parse_args()
         taskToCreate = parsed_args['task']
         json_data = ast.literal_eval(taskToCreate)
@@ -82,6 +86,12 @@ class TodoTaskList(Resource):
         session.add(newTask)
         session.commit()
         return newTask, 201
+
+    def delete(self):
+        """Purges database. Removes every row"""
+        req = session.query(Task).delete()
+        session.commit()
+        return jsonify('Number of row deleted: ' + str(req))
 
 
 if __name__ == '__main__':
