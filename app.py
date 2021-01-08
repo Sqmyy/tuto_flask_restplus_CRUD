@@ -29,8 +29,12 @@ request.add_argument('task', location='json')
 
 
 """Manages tasks individually"""
+"""Manages the complete list of tasks"""
+
+
 @myNamespace.route("/tasks/<int:task_id>")
 class TaskByID(Resource):
+    @myNamespace.doc(responses={200: 'OK', 500: 'Database unreachable'})
     def get(self, task_id=None):
         """Gets the details of a task from its id"""
         task = session.query(Task).filter(Task.t_id == task_id).first()
@@ -38,6 +42,7 @@ class TaskByID(Resource):
             abort(404, message="Task {} not existing".format(id))
         return task.display()
 
+    @myNamespace.doc(responses={200: 'OK', 400: 'Invalid argument', 500: 'Database unreachable'})
     def delete(self, task_id):
         """Deletes a task from its id"""
         task = session.query(Task).filter(Task.t_id == task_id).first()
@@ -49,6 +54,7 @@ class TaskByID(Resource):
 
     @myNamespace.marshal_with(TodoTask.task)
     @myNamespace.expect(request, validate=False)
+    @myNamespace.doc(responses={200: 'OK', 400: 'Invalid argument', 500: 'Database unreachable'})
     def put(self, task_id):
         """Changes values of a task from its id"""
         parsed_args = request.parse_args()
@@ -62,11 +68,10 @@ class TaskByID(Resource):
         session.commit()
         return task, 201
 
-
-"""Manages the complete list of tasks"""
 @myNamespace.route("/tasks")
 class TodoTaskList(Resource):
     @myNamespace.marshal_with(TodoTask.task)
+    @myNamespace.doc(responses={200: 'OK', 500: 'Database unreachable'})
     def get(self):
         """Gets every task in the list"""
         tasks = session.query(Task).all()
@@ -75,6 +80,7 @@ class TodoTaskList(Resource):
 
     @myNamespace.marshal_with(TodoTask.task)
     @myNamespace.expect(request, validate=False)
+    @myNamespace.doc(responses={200: 'OK', 400: 'Invalid argument', 500: 'Database unreachable'})
     def post(self):
         """Adds a task to the list"""
         parsed_args = request.parse_args()
@@ -87,8 +93,9 @@ class TodoTaskList(Resource):
         session.commit()
         return newTask, 201
 
+    @myNamespace.doc(responses={200: 'OK', 500: 'Database unreachable'})
     def delete(self):
-        """Purges database. Removes every row"""
+        """Purges database, Removes every row"""
         req = session.query(Task).delete()
         session.commit()
         return jsonify('Number of row deleted: ' + str(req))
