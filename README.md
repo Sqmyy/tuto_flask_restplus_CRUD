@@ -1,17 +1,16 @@
 # ANSIBLE
 
-Avec Ansible on utilise un playbook pour gérer plusieurs noeuds distants
+With Ansible we use a __playbook__ to manage distant nodes
 
-L'inventaire décrit l'ensemble des noeuds ciblé par Ansible on peut y regrouper les noeuds par domaines et sous-domaines
+The inventory describes the targeted nodes by Ansible, We can group them by domain or subdomain.
 
-Le playbook va être la liste des tâches à exécuter sur les noeuds distants
+The playbook is the list of tasks to execute on distant nodes
 
-Les tasks sont spécifique à UN seul playbook et on y précise l'hôte sur lequel exécuter la task
-généralement pratiquées dans des petits playbooks car beaucoup de details y sont précisés donc ça alourdit le playbook
-qui peut vite devenir illisible car très long
+Tasks are specific to ONE playbook, and the host executing the task have to be stated inside.
+Generally tasks are used in short playbooks. The reason is it specifies a lot of details which will complicate the playbook and make it very long.
 
-Les roles permettent de regrouper des tasks, peuvent être réutilisés dans plusieurs playbooks
-possèdent une structure de dossier avec main, doit inclure un main dans au moins 1 des 7 dossiers suivants et ignorer les autres : 
+Roles let you group tasks and can be reused in more than 1 playbook.
+They possess a file structure with at least 1 main in the following files:
 - tasks/
 - handlers/ 
 - library/
@@ -20,58 +19,56 @@ possèdent une structure de dossier avec main, doit inclure un main dans au moin
 - vars/
 - defaults/
 
-Les handlers sont des tasks exécutées à la fin de l'exécution des tasks et roles. Ils sont efficaces car un handler s'exécute une seule fois malgré le nombre de task qui y fait appel
+Handlers are basically tasks but they are executed after tasks and roles. They are useful because they are executed only once no matter how many times they are called within other tasks
 
-Dans un playbook l'ordre d'execution est :
+The order of execution in a playbook is as following:
 
-1) Les tasks s'exécutent en premières
-2) Les roles en deuxième
-3) Les handlers s'exécutent à la fin
+1) Tasks executed in first
+2) Roles in second
+3) Lastly handlers are executed
 
 
 
 # OPENSTACK 
 
-Openstack permet de créer des clouds privés ou publics et est composé de plusieurs briques dont:
+Openstack allows the creation of private and public clouds and is composed of several layers such as: 
 
-- __NOVA :__ Permet de créer et gérer des serveurs virtuels, dépend de Glance Neutron Keystone et Placements et est composé de plusieurs éléments qui communiquent entre eux :
-    - Une base de donnees en SQL
-    - l'API communique avec les autres components via requêtes HTTP
-    - Le Scheduler décide quel hôte possède quelle instance
-    - Le Compute communique avec les VM
-    - Le Conductor gère les requêtes qui ont besoin de coordination
-    - Les Placements garde une trace des infos sur le provider comme le type de ressource que le provider utilise, ...
-	
-Permet aussi de créer/gérer les groupes de sécurité, utile par exemple avec NEUTRON pour établir les règles de connexion
-à un réseau virtuel
+- __NOVA :__ To create and manage virtual servers, this service depends on Glance, Neutron, Keystone and Placements services and is composed of:
+    - An SQL database
+    - The API communicates with other components via HTTP requests
+    - Scheduler decides which host owns which instance
+    - Compute communicates with the virtual machines
+    - Conductor manages requests needing coordination
+	- Placements keep a trace of provider's information such as what ressource the provider needs, ... 
+      
+Also allows creating and/or managing security groups, useful for instance with NEUTRON to establish connection rules to a virtual network
 
-- __GLANCE :__
-Permet la découverte, l'enregistrement et la fourniture de services pour les images disques et serveurs
-
-- __KEYSTONE :__
-Catalogue de services et correlation des utilisateurs avec leurs droits d'accès. C'est pour l'authentification de client
-
-- __NEUTRON :__ 
-Administration du réseau et des adresses IP utilisées par les instances de traitements. Permet le Loadbalancing-as-a-Service et le FireWall-as-a-Service. differentes technologies pour fonctionner:
-	Neutron est composé par différentes couches sur Neutron:
-
-    - __Controller(OBLIGATOIRE)__ Exécute l'Identity service, l'Image service, les Network agents
-inclut des services de support comme BDD SQL. A besoin de 2 interfaces réseau
-
-    - __Compute (OBLIGTOIRE)__
-Exécution de la VM et un networking service agent qui connecte les instances au réseau virtuel et un pare-feu. A besoin de 2 interfaces réseau
-
-    - __Block Storage(OPTIONNEL)__
-Espace de stockage contenant les "disques durs" on peut en deployer plusieurs. A besoin d'une interface réseau
-
-    - __Object Storage(OPTIONNEL)__
-On coupe les données en plusieurs blocs ces blocs sont indépendants les uns des autres et peuvent être utilisés sur plusieurs systèmes. On peut en deployer plusieurs. A besoin d'1 interface réseau
-
-### Creation d'une infrastructure réseau :
-- Creation de deux networks et sub-networks sur chaque network auxquels on relie des VM et on associe des ports à la création des networks, des DHCP sont automatiquement crées
-		
-- Grâce à NOVA on établit les règles de sécurités des groupes qui vont utiliser l'infrastructure
+- __GLANCE :__ https://docs.openstack.org/glance/latest/ \
+  It is the Image Service. It allows discovering, register and upload of data assets, disk and server images.
   
-- Pour que nos VM puissent communiquer avec un autre reseau il faut
-		
-- Créer un routeur virtuel (external virtual router), pour le rendre joignable sur internet, on set le router comme Gateway.
+- __KEYSTONE :__ https://docs.openstack.org/keystone/latest/ \
+  Provides API client authentication, and their access rules, service discovery
+
+- __NEUTRON :__ https://docs.openstack.org/neutron/latest/ \
+  Provides Network connectivity-as-a-service, allows network administration and providing IP address to other Openstack services. Also allows Load balancing-as-a-Service and Firewall-as-a-Service. Needs several layers to work:
+
+    - __Controller(MANDATORY)__
+Executes the Identity service, the Image service, Network agents. Incudes support services such as SQL database. Requires 2 network interfaces.
+
+    - __Compute (MANDATORY)__
+Executes virtual machines, and a networking service agent connecting instances to a virtual network add providing a firewall. Requires 2 network interfaces
+
+    - __Block Storage(OPTIONAL)__
+Storage space containing "hard drives", you can deploy more than 1. Requires 1 network interface
+
+    - __Object Storage(OPTIONAL)__
+We split data in self-standing blocs and can be used by many systems. Requires 1 network interface
+
+### Network infrastructure creation : 
+- Create 2 networks and 2 subnetworks that you link to virtual machines and associates ports. DHCP are automatically created
+
+- Using NOVA configure security rules for the groups that will use the infrastructure
+
+- In order to allow our virtual machines to communicate with another network we need to create an external virtual router
+
+- To set that router available on the internet set it as a Gateway
