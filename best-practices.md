@@ -7,7 +7,7 @@ Une API qui respecte les best practices sera :
 - Facile à utiliser
 - Complete et robuste
 
-Pour se faire on se repose sur le principe de KISS, Keep It Simple, Stupid, qui préconise l'utilisation d'un framework ayant une grande communauté et utiliser les plugins à disposition.
+Pour se faire on se repose sur le principe de KISS, Keep It Simple, Stupid, qui préconise la simplicité dans la façon de coder, l'utilisation d'un framework ayant une grande communauté, et utiliser les plugins à disposition, afin de faciliter au maximum le maintient et l'évolution de l'API, ainsi que d'éviter les features trop complexes et inutiles.
 
 ## __Nommage__
 Il existe plusieurs convention de nommage, cependant certaines sont tres courantes et seront retrouvées dans un grand nombre de projet. Il s'agit du ```spinal-case``` pour les URLs et noms de ressources, et du ```snake_case``` ou du ```camelCase``` pour les champs et parametres des ressources. Ces manières de nommer permettent d'éviter les espaces, apostrophes et autres caractères non recommandés dans les noms de variables et ressources en informatique. 
