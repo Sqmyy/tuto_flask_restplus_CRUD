@@ -105,6 +105,7 @@ Il est evidemment, pour protéger son application, primordiale de ne pas stocker
 Au delà du problème du contenu statique, une API subit des attaques similaires à celles visant les réseaux et applications web. Si notre API fais l'objet d'une attaque bien menée, ce ne sont pas seulement les données qui sont à risque, mais également l'infrastructure. La sécurité est donc une priorité dans le developpement d'une API.
 Le type d'attaque le plus courant que peut subir une API, est probablemenmt le type SQLi, SQL injection, qui a lieu lorsqu'une personne mal intentionnée insère des commandes ou du code malveillant dans un programme à partir d'un champs de texte, comme par exemple le nom utilisateur ou le mot de passe. Grâce a ce type d'attaque il est possible de prendre le contrôle d'une base de donnée SQL.
 Il existe cependant d'autres types d'attaques:
+
 Type d'attaque | Mesures préventives
 :---:|:---:
 Injection SQL, insertion de commandes/code malveillants dans un input utilisateur | Utilisation d'ORM __/__ Validations des entrées utilisateur et échappement de caractères spéciaux (empêchement d'utilisation de caractères spéciaux, ...) __/__ Utiliser des requêtes préparées
