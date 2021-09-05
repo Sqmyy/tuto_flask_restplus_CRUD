@@ -101,13 +101,24 @@ En revanche avec une telle approche, une erreur et c'est toute l'application qui
 ## __Gestion du contenu statique__
 Il est evidemment, pour protéger son application, primordiale de ne pas stocker les clés d'API et secrets dans le code source même de l'application. Il est de bonne pratique de stocker ce genre de données soit dans des variables d'environnement, soit dans des fichiers en dehors de l'arborescence source de l'application.
 
+## __Sécurité__
+Au delà du problème du contenu statique, une API subit des attaques similaires à celles visant les réseaux et applications web. Si notre API fais l'objet d'une attaque bien menée, ce ne sont pas seulement les données qui sont à risque, mais également l'infrastructure. La sécurité est donc une priorité dans le developpement d'une API.
+Le type d'attaque le plus courant que peut subir une API, est probablemenmt le type SQLi, SQL injection, qui a lieu lorsqu'une personne mal intentionnée insère des commandes ou du code malveillant dans un programme à partir d'un champs de texte, comme par exemple le nom utilisateur ou le mot de passe. Grâce a ce type d'attaque il est possible de prendre le contrôle d'une base de donnée SQL.
+Il existe cependant d'autres types d'attaques:
+Type d'attaque | Mesures préventives
+:---:|:---:
+Injection SQL, insertion de commandes/code malveillants dans un input utilisateur | Utilisation d'ORM __/__ Validations des entrées utilisateur et échappement de caractères spéciaux (empêchement d'utilisation de caractères spéciaux, ...) __/__ Utiliser des requêtes préparées
+Cross-Site Scripting (XSS), insertion d'un script malveillant dans le code de l'application | Validation des entrées utilisateur __/__ Activation de l'option HttpOnly __/__ Échappemment de caractères spéciaux
+Distributed Denial-of-Service (DDOS), Excéder la capacité de trafic que peut prendre en charge un réseau, système ou site Web pour le rendre inaccessible aux utilisateurs | Limiter le nombre de requêtes et la charge utile / Mise en place de pare-feux, load-balancer, et autres répartiteurs de charge
+Man in the Middle (MitM), Interception de trafic entre deux API et application ou bien API et endpoint, en se faisant passer pour l'un ou pour l'autre auprès de chacun. | Chiffrement des données échangés entre les systèmes cpmmuniquants entre eux.
+
 ## __Documenter son API__
 Pour que l'API soit facilement réutilisable et encourager d'autres devleloppeur à consommer l'API, il est très important de fournir une documentation claire et concise. Dans cette documentation figureront:
 - la ou les méthodes d'authentification
 - les headers acceptés
 - les différents endpoints
 - les différentes opérations disponibles
-Pour chaque méthodes(opérations):
+  Pour chaque méthodes(opérations):
     - les paramètres acceptés
     - le format de la requête
     - le modèle du corps de la requête
